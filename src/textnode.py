@@ -10,18 +10,6 @@ class TextType:
     IMAGE = "image"
 
 
-# Uncertain what the dict should look like
-# Unneeded anyway?
-# TextDelimiter = {
-#     "": TextType.TEXT: ,
-#     "*": TextType.BOLD: "*",
-#     "i": TextType.ITALIC: "i",
-#     "`": TextType.CODE: "`",
-#     "a": TextType.LINK: "a",
-#     "img": TextType.IMAGE: "img"
-# }
-
-
 class TextNode:
     def __init__(self, text, text_type, url=None):
         self.text = text
