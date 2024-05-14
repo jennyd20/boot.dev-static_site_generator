@@ -14,7 +14,7 @@ def _split_nodes_delimiter(old_nodes, delimiter, text_type):
 
         # If the split has resulted in an even number, then a delimiter has not been closed.
         if len(sections) % 2 == 0:
-            raise ValueError(f"Invalid Markdown syntax found in text: {node.text}")
+            raise ValueError(f"Invalid Markdown syntax, delimiter not closed in text: {node.text}")
 
         # Otherwise, every section will alternate between the new type and the TEXT text type.
         # Skip empty sections.

@@ -1,4 +1,5 @@
 from .textnode import TextNode
+import init_public_dir
 
 
 if __name__ == "__main__":
