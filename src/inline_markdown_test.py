@@ -422,6 +422,7 @@ class TestTextToTextNodes(unittest.TestCase):
     #     ]
     #     self.assertEqual(result, expected)
 
+
 class FromBootDevLesson(unittest.TestCase):
     def test_delim_bold(self):
         node = TextNode("This is text with a **bolded** word", TextType.TEXT)

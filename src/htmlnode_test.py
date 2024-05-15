@@ -134,6 +134,7 @@ class TestParentNode(unittest.TestCase):
             "<top><first><a>atext</a><b>btext</b></first><second><c>ctext</c><d>dtext</d></second></top>",
         )
 
+
 class FromBootDevLesson(unittest.TestCase):
     def test_to_html_props(self):
         node = HTMLNode(
