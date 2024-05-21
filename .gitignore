@@ -1,2 +1,8 @@
 __pycache__/
+.vscode
 public/
+
+### Remove these
+public_original/
+test_static/
+TEST*/
