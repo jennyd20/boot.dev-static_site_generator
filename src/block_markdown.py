@@ -14,40 +14,40 @@ class BlockType:
 
 
 def markdown_to_blocks(markdown):
-    block_strs = []
+    blocks = []
     sections = markdown.split("\n\n")
     for sect in sections:
         block = sect.strip()
         if block:
-            block_strs.append(block)
-    return block_strs
+            blocks.append(block)
+    return blocks
 
 
 # TODO: return a tuple where the second part is the stuff inside the block type markdown
-def block_to_block_type(markdown):
+def block_to_block_type(markdown_block):
     # Headings start with 1-6 # characters, followed by a space and then the heading text.
     heading_rgex = r"^#{1,6} "
-    if re.search(heading_rgex, markdown):
+    if re.search(heading_rgex, markdown_block):
         return BlockType.HEADING
 
     # Code blocks must start with 3 backticks and end with 3 backticks.
     code_regex = r"(?s)^```.*```$"
-    if re.search(code_regex, markdown):
+    if re.search(code_regex, markdown_block):
         return BlockType.CODE
 
     # Every line in a quote block must start with a > character.
     quote_regex = r"(?m)^>.*$"
-    if re.search(quote_regex, markdown):
+    if re.search(quote_regex, markdown_block):
         return BlockType.QUOTE
 
     # Every line in an unordered list block must start with a * or - character.
     unordered_list_regex = r"(?m)^[*-].*$"
-    if re.search(unordered_list_regex, markdown):
+    if re.search(unordered_list_regex, markdown_block):
         return BlockType.UNORDERED_LIST
 
     # Every line in an ordered list block must start with a number followed by a . character.
     # The number must start at 1 and increment by 1 for each line.
-    if _is_ordered_list(markdown):
+    if _is_ordered_list(markdown_block):
         return BlockType.ORDERED_LIST
 
     # By default, if nothing else matches than this is a paragraph

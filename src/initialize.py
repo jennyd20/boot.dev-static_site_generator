@@ -1,6 +1,8 @@
-from email.mime import base
 import os
 import shutil
+import re
+
+from .block_markdown import markdown_to_html_node
 
 # Write a recursive function that copies all the contents of a directory to another directory.
 # This should include all files and subdirectories. Here are some of the stdlib docs that might be helpful:
@@ -85,5 +87,66 @@ def _copy_static_(base_dir, sub_dir=""):
         _copy_static_(base_dir, os.path.join(sub_dir, d))
     pass
 
+
+# EXTRACT TITLE FUNCTION
+# extract_title(markdown)
+
+# Grab the text of the h1 header from the markdown file (The line that starts with a single #) and return it. If there is no h1 header, raise an exception. All pages need a single h1 header.
+
+TITLE_REGEX = re.compile(r"^# (?P<title>.+)", re.MULTILINE)
+
+def _extract_title(markdown):
+    # Find line with the single #
+    title = list(TITLE_REGEX.finditer(markdown))
+    if len(title) != 1:
+        raise ValueError("Markdown must have a single populated h1 header (title)")
+    
+    return title[0]["title"]
+
+
+
+# GENERATE PAGE FUNCTION
+# generate_page(from_path, template_path, dest_path)
+
+# Print a message to the console that says something like "Generating page from from_path to dest_path using template_path".
+# Read the markdown file at from_path and store the contents in a variable.
+# Read the template file at template_path and store the contents in a variable.
+# Use your markdown_to_html_node function and .to_html() method to convert the markdown file to HTML.
+# Use the extract_title function to grab the title of the page.
+# Replace the {{ Title }} and {{ Content }} placeholders in the template with the HTML and title you generated.
+# Write the new HTML to a file at dest_path. Be sure to create any necessary directories if they don't exist.
+# Docs that may be helpful:
+
+# open
+# .read()
+# .close()
+# .replace()
+# os.path.dirname
+# os.makedirs
+# .startswith()
+# .split()
+def generate_page(from_path, template_path, dest_path):
+    print(f"Generating page from {from_path} to {dest_path} using {template_path}")
+    input_file = open(from_path)
+    input = input_file.read()
+    input_file.close()
+
+    template_file = open(template_path)
+    template = template_file.read()
+    template_file.close()
+
+    output_nodes = markdown_to_html_node(input)
+    output_html = output_nodes.to_html()
+
+    title = _extract_title(output_html)
+
+    template.replace(f"{{ Title }}", title)
+    template.replace(f"{{ Content }}", output_html)
+
+    print("Completed page generation")
+
 if __name__ == "__main__":
-    generate()
+    from_path = "content/index.md"
+    template = "template.html"
+    dest_path = "public/index.html"
+    generate_page(from_path, template, dest_path)
