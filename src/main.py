@@ -1,24 +1,20 @@
-import os
-from .initialize import generate_public_assets, generate_html_page
+from pathlib import Path
+from .initialize import generate_public_assets, generate_html_pages
 
 
 if __name__ == "__main__":
-    src_dir = os.path.dirname(__file__)
-    base_dir = os.path.dirname(src_dir)  # TODO: Can use pathlib for this part
-
-    # Reset the public directory and copy assets from the static dir
-    generate_public_assets(base_dir)
+    base_dir = Path(__file__).parent.parent
 
     # TODO: Best to set these as defaults and not hard-code them (can pass as args, for instance?)
-    from_path = os.path.join(base_dir, "content/index.md")
-    template_path = os.path.join(base_dir, "template.html")
-    dest_path = os.path.join(base_dir, "public/index.html")
+    dir_path_content = Path.joinpath(base_dir, "content")
+    template_path = Path.joinpath(base_dir, "template.html")
+    dir_path_dest = Path.joinpath(base_dir, "public")
+    dir_path_static = Path.joinpath(base_dir, "static")
 
-    print(f"Generating site from {from_path} to {dest_path} using {template_path}")
-    site_html = generate_html_page(from_path, template_path)
+    # Reset the public directory and copy assets from the static dir
+    print(f"Resetting the public assets in {dir_path_dest} using {dir_path_static}")
+    generate_public_assets(dir_path_static, dir_path_dest)
 
-    # Write HTML to dest_path
-    with open(dest_path, "w") as dest_file:
-        dest_file.write(site_html)
-
+    print(f"Generating all pages from {dir_path_content}")
+    generate_html_pages(dir_path_content, template_path, dir_path_dest)
     print("Completed site generation")
