@@ -5,7 +5,7 @@ from .initialize import generate_public_assets, generate_html_pages
 if __name__ == "__main__":
     base_dir = Path(__file__).parent.parent
 
-    # TODO: Best to set these as defaults and not hard-code them (can pass as args, for instance?)
+    # TODO: Best to set these as defaults and not hard-code them (can pass as args, for instance)
     dir_path_content = Path.joinpath(base_dir, "content")
     template_path = Path.joinpath(base_dir, "template.html")
     dir_path_dest = Path.joinpath(base_dir, "public")

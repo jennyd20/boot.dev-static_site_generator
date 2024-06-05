@@ -42,7 +42,7 @@ def _extract_markdown_images(text):
 # Only match if there is no "!"" preceding the square brackets
 def _extract_markdown_links(text):
     rgex = r"(?<!\!)\[(.*?)\]\((.*?)\)"
-    # TODO Simpler?
+    # TODO Is this simpler with lookaheads?
     # rgex = r"^[^!]\[(.*?)\]\((.*?)\)"
     matches = re.findall(rgex, text)
     return matches

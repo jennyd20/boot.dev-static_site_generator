@@ -57,7 +57,7 @@ def generate_html_pages(dir_path_content, template_path, dir_path_dest):
             html_page = _generate_html_page(from_path, template_path)
             html_path = Path.joinpath(to_path, file_name)
             print(f"Creating {html_path}")
-            html_path.write_text(html_page)
+            _ = html_path.write_text(html_page)
 
     _copy_dir(dir_path_content, dir_path_dest, _check_md)
 

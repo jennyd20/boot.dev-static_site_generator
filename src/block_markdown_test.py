@@ -1,4 +1,5 @@
 import unittest
+
 from textwrap import dedent
 from .block_markdown import (
     BlockType,
@@ -102,7 +103,8 @@ class BlockToBlockType(unittest.TestCase):
             """\
             #### Valid heading
             with multiple lines, baby
-            YEEEAAAAHH"""
+            YEEEAAAAHH
+            """
         )
         self.assertEqual(block_to_block_type(input), BlockType.HEADING)
 
@@ -115,7 +117,8 @@ class BlockToBlockType(unittest.TestCase):
             """\
             ``` a = "so much code"
             b = "to test here"
-            c = True```"""
+            c = True```
+            """
         )
         self.assertEqual(block_to_block_type(input), BlockType.CODE)
 
@@ -124,7 +127,8 @@ class BlockToBlockType(unittest.TestCase):
             """\
             > I am quoting
             > a prior quote
-            > from a cool author"""
+            > from a cool author
+            """
         )
         self.assertEqual(block_to_block_type(input), BlockType.QUOTE)
 
@@ -133,7 +137,8 @@ class BlockToBlockType(unittest.TestCase):
             """\
             > I am quoting
             a prior quote
-            > from a cool author"""
+            > from a cool author
+            """
         )
         self.assertEqual(block_to_block_type(input), BlockType.QUOTE)
 
@@ -142,7 +147,8 @@ class BlockToBlockType(unittest.TestCase):
             """\
             * Dishes
             * Refill medications
-            * Stay awake"""
+            * Stay awake
+            """
         )
         self.assertEqual(block_to_block_type(input), BlockType.UNORDERED_LIST)
 
@@ -151,7 +157,8 @@ class BlockToBlockType(unittest.TestCase):
             """\
             - Feed the dog
             - Play with the dog
-            - Make sure the dog naps"""
+            - Make sure the dog naps
+            """
         )
         self.assertEqual(block_to_block_type(input), BlockType.UNORDERED_LIST)
 
@@ -160,7 +167,8 @@ class BlockToBlockType(unittest.TestCase):
             """\
             * Enjoy the sunshine
             - Be inside
-            * Exercise"""
+            * Exercise
+            """
         )
         self.assertEqual(block_to_block_type(input), BlockType.UNORDERED_LIST)
 
@@ -169,7 +177,8 @@ class BlockToBlockType(unittest.TestCase):
             """\
             * Dishes
             Refill medications
-            * Stay awake"""
+            * Stay awake
+            """
         )
         self.assertEqual(block_to_block_type(input), BlockType.UNORDERED_LIST)
 
@@ -178,7 +187,8 @@ class BlockToBlockType(unittest.TestCase):
             """\
             1. The beginning
             2. the middle
-            3. the end"""
+            3. the end
+            """
         )
         self.assertEqual(block_to_block_type(input), BlockType.ORDERED_LIST)
 
@@ -187,7 +197,8 @@ class BlockToBlockType(unittest.TestCase):
             """\
             1. The **beginning**!  Really.
             2. the middle.  *Kinda boring*.
-            3. the end.  We are done, yaaay##!``` ALL THE > SYMBOLS"""
+            3. the end.  We are done, yaaay##!``` ALL THE > SYMBOLS
+            """
         )
         self.assertEqual(block_to_block_type(input), BlockType.ORDERED_LIST)
 
@@ -196,7 +207,8 @@ class BlockToBlockType(unittest.TestCase):
             """\
             0. the beginning
             1. the middle
-            2. the end"""
+            2. the end
+            """
         )
         self.assertEqual(block_to_block_type(input), BlockType.PARAGRAPH)
 
@@ -205,7 +217,8 @@ class BlockToBlockType(unittest.TestCase):
             """\
             1. the beginning.
             3. the end
-            2. the middle"""
+            2. the middle
+            """
         )
         self.assertEqual(block_to_block_type(input), BlockType.PARAGRAPH)
 
@@ -214,7 +227,8 @@ class BlockToBlockType(unittest.TestCase):
             """\
             1 the beginning
             3 the middle.  Has a period here.
-            2 the end"""
+            2 the end
+            """
         )
         self.assertEqual(block_to_block_type(input), BlockType.PARAGRAPH)
 
@@ -224,7 +238,8 @@ class BlockToBlockType(unittest.TestCase):
             ```the beginning
             > Not a list
             1. Still not a list
-            ### Or a heading```"""
+            ### Or a heading```
+            """
         )
         self.assertEqual(block_to_block_type(input), BlockType.CODE)
 
@@ -236,7 +251,8 @@ class BlockToBlockType(unittest.TestCase):
             >  ### Heading
             >1. list
             >2. list2
-            > * unordered"""
+            > * unordered
+            """
         )
         self.assertEqual(block_to_block_type(input), BlockType.QUOTE)
 
@@ -264,6 +280,26 @@ class BlockToHtmlNode(unittest.TestCase):
         result = block_to_html_node(input, type)
 
         expected = f"<pre><code>This is a code block with <i>italicized text</i>, yo!</code></pre>"
+        self.assertEqual(result.to_html(), expected)
+
+    def test_multiline_code(self):
+        input = dedent(
+            """/
+            ```a = 1
+            b = 2
+            c = 3```
+            """
+        )
+        type = BlockType.CODE
+        result = block_to_html_node(input, type)
+
+        expected = dedent(
+            """/
+            <pre><code>a = 1
+            b = 2
+            c = 3</code></pre>
+            """
+        )
         self.assertEqual(result.to_html(), expected)
 
     def test_quote(self):
@@ -356,7 +392,7 @@ class MarkdownToHtml(unittest.TestCase):
     def test_inline_in_code(self):
         input = "```This *code* is **amazing**!\nSimply the best!```"
         result = markdown_to_html_node(input)
-        expected = "<div><pre><code>This <i>code</i> is <b>amazing</b>! Simply the best!</code></pre></div>"
+        expected = "<div><pre><code>This <i>code</i> is <b>amazing</b>!\nSimply the best!</code></pre></div>"
         self.assertEqual(result.to_html(), expected)
 
     def test_complex(self):
@@ -437,15 +473,17 @@ class MarkdownToHtml(unittest.TestCase):
 
 class FromBootDevLesson(unittest.TestCase):
     def test_markdown_to_blocks(self):
-        md = """
-This is **bolded** paragraph
+        md = dedent(
+            """
+            This is **bolded** paragraph
 
-This is another paragraph with *italic* text and `code` here
-This is the same paragraph on a new line
+            This is another paragraph with *italic* text and `code` here
+            This is the same paragraph on a new line
 
-* This is a list
-* with items
-"""
+            * This is a list
+            * with items
+            """
+        )
         blocks = markdown_to_blocks(md)
         self.assertEqual(
             blocks,
@@ -457,18 +495,20 @@ This is the same paragraph on a new line
         )
 
     def test_markdown_to_blocks_newlines(self):
-        md = """
-This is **bolded** paragraph
+        md = dedent(
+            """
+            This is **bolded** paragraph
 
 
 
 
-This is another paragraph with *italic* text and `code` here
-This is the same paragraph on a new line
+            This is another paragraph with *italic* text and `code` here
+            This is the same paragraph on a new line
 
-* This is a list
-* with items
-"""
+            * This is a list
+            * with items
+            """
+        )
         blocks = markdown_to_blocks(md)
         self.assertEqual(
             blocks,
@@ -494,12 +534,14 @@ This is the same paragraph on a new line
         self.assertEqual(block_to_block_type(block), BlockType.PARAGRAPH)
 
     def test_paragraph(self):
-        md = """
-This is **bolded** paragraph
-text in a p
-tag here
+        md = dedent(
+            """
+            This is **bolded** paragraph
+            text in a p
+            tag here
 
-"""
+            """
+        )
 
         node = markdown_to_html_node(md)
         html = node.to_html()
@@ -509,14 +551,16 @@ tag here
         )
 
     def test_paragraphs(self):
-        md = """
-This is **bolded** paragraph
-text in a p
-tag here
+        md = dedent(
+            """
+            This is **bolded** paragraph
+            text in a p
+            tag here
 
-This is another paragraph with *italic* text and `code` here
+            This is another paragraph with *italic* text and `code` here
 
-"""
+            """
+        )
 
         node = markdown_to_html_node(md)
         html = node.to_html()
@@ -526,16 +570,18 @@ This is another paragraph with *italic* text and `code` here
         )
 
     def test_lists(self):
-        md = """
-- This is a list
-- with items
-- and *more* items
+        md = dedent(
+            """
+            - This is a list
+            - with items
+            - and *more* items
 
-1. This is an `ordered` list
-2. with items
-3. and more items
+            1. This is an `ordered` list
+            2. with items
+            3. and more items
 
-"""
+            """
+        )
 
         node = markdown_to_html_node(md)
         html = node.to_html()
@@ -545,13 +591,15 @@ This is another paragraph with *italic* text and `code` here
         )
 
     def test_headings(self):
-        md = """
-# this is an h1
+        md = dedent(
+            """
+            # this is an h1
 
-this is paragraph text
+            this is paragraph text
 
-## this is an h2
-"""
+            ## this is an h2
+            """
+        )
 
         node = markdown_to_html_node(md)
         html = node.to_html()
@@ -561,13 +609,15 @@ this is paragraph text
         )
 
     def test_blockquote(self):
-        md = """
-> This is a
-> blockquote block
+        md = dedent(
+            """
+            > This is a
+            > blockquote block
 
-this is paragraph text
+            this is paragraph text
 
-"""
+            """
+        )
 
         node = markdown_to_html_node(md)
         html = node.to_html()

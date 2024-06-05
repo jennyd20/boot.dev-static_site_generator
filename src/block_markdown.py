@@ -117,15 +117,14 @@ def _heading_to_html_node(block):
     return ParentNode("h" + str(h_count), children)
 
 
-# Note: each individual line inside the code block will be treated as its own paragraph
+# Note: keep newlines in the code block.  Not true with all other blocks.
 def _code_to_html_node(block):
-    filtered = block[3:-3]
-    children = _get_children(filtered)
+    filtered = block[3:-3].strip()
+    children = _get_children(filtered, True)
     code_block = ParentNode("code", children)
     return ParentNode("pre", [code_block])
 
 
-# Note: each individual line inside the quote block will be treated as its own paragraph
 def _quote_to_html_node(block):
     filtered = _strip_chars_from_lines(block, 2)
     children = _get_children(filtered)
@@ -147,6 +146,9 @@ def _ordered_to_html_node(block):
 ################ HELPER METHODS ################
 
 
+# Strip a given number of characters from lines
+# for blocks whose lines all have a symbol in the front,
+# such as quotes, unordered lists, and ordered lists
 def _strip_chars_from_lines(block, num_to_strip):
     stripped_lines = []
     for line in block.splitlines():
@@ -154,9 +156,10 @@ def _strip_chars_from_lines(block, num_to_strip):
     return "\n".join(stripped_lines)
 
 
-def _get_children(block):
-    # Remove excess newlines from the block sections
-    block = re.sub("\n", " ", block)
+def _get_children(block, keep_newlines = False):
+    # Code does keep newlines, but everything else does not.
+    if not keep_newlines:
+        block = re.sub("\n", " ", block)
     textnodes = text_to_textnodes(block)
     html_nodes = []
     for n in textnodes:
